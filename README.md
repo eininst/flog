@@ -4,15 +4,24 @@
 
 ## Use
 ```go
-flog.Trace("Something very low level.")
-flog.Debug("Useful debugging information.")
-flog.Info("Something noteworthy happened!")
-flog.Warn("You should probably take a look at this.")
-flog.Error("Something failed but I'm not quitting.")
+package main
 
-flog.Info(color.Green(flog.Sprintf("My name is {{name}}", flog.H{
-    "name": "jack",
-})))
+import (
+	flog "github.com/eininst/fastgo-log"
+)
+
+func main() {
+	flog.Trace("Something very low level.")
+	flog.Debug("Useful debugging information.")
+	flog.Info("Something noteworthy happened!")
+	flog.Warn("You should probably take a look at this.")
+	flog.Error("Something failed but I'm not quitting.")
+
+	flog.Info(flog.Sprintf("My name is {{name}}", flog.H{
+		"name": "jack",
+	}))
+}
+
 ```
 
 ## License
