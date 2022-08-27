@@ -22,7 +22,7 @@ func main() {
 	flog.Warn("You should probably take a look at this.")
 	flog.Error("Something failed but I'm not quitting.")
 
-	flog.Info(flog.Sprintf("My name is {{name}}", flog.H{
+	flog.Info(flog.Sprintf("My name is ${name}", flog.H{
 		"name": "jack",
 	}))
 
