@@ -1,8 +1,8 @@
-# Log
+# Fastgo log
 
 [![Build Status](https://travis-ci.org/ivpusic/grpool.svg?branch=master)](https://github.com/infinitasx/easi-go-aws)
 
-## Use
+## ⚡ Quickstart
 ```go
 package main
 
@@ -20,9 +20,41 @@ func main() {
 	flog.Info(flog.Sprintf("My name is {{name}}", flog.H{
 		"name": "jack",
 	}))
-}
 
+	//Calls os.Exit(1) after logging
+	flog.Fatal("Bye.")
+	//Calls panic() after logging
+	flog.Panic("I'm bailing.")
+}
 ```
 
+
+```
+2022/08/28 02:13:18 [TRACE] test.go:15 Something very low level.
+2022/08/28 02:13:18 [DEBUG] test.go:16 Useful debugging information.
+2022/08/28 02:13:18 [INFO] test.go:17 Something noteworthy happened!
+2022/08/28 02:13:18 [WARN] test.go:18 You should probably take a look at this.
+2022/08/28 02:13:18 [ERROR] test.go:19 Something failed but I'm not quitting.
+2022/08/28 02:13:18 [INFO] test.go:21 My name is jack
+2022/08/28 02:13:18 [FATAL] test.go:26 Bye.
+```
+
+> You can customize it all you want:
+```go
+func init() {
+	flog.SetLevel(flog.InfoLevel)
+	flog.SetFormat("{{Time}} {{Level}} {{Path}} {{Msg}}")
+	flog.SetTimeFormat("2006.01.02 15:04:05.000")
+	flog.SetFullPath(true)
+}
+```
+
+```text
+2022.08.28 02:14:58.858 [INFO] /Users/wangziqing/go/fastgo/cmd/consumer/test.go:16 Something noteworthy happened!
+2022.08.28 02:14:58.859 [WARN] /Users/wangziqing/go/fastgo/cmd/consumer/test.go:17 You should probably take a look at this.
+2022.08.28 02:14:58.859 [ERROR] /Users/wangziqing/go/fastgo/cmd/consumer/test.go:18 Something failed but I'm not quitting.
+2022.08.28 02:14:58.859 [INFO] /Users/wangziqing/go/fastgo/cmd/consumer/test.go:20 My name is jack
+2022.08.28 02:14:58.859 [FATAL] /Users/wangziqing/go/fastgo/cmd/consumer/test.go:25 Bye.
+```
 ## License
 *MIT*

@@ -102,7 +102,7 @@ var (
 	defaultTimeFormat = "2006/01/02 15:04:05"
 	std               = New(Config{
 		Format:     defaultFormat,
-		LogLevel:   InfoLevel,
+		LogLevel:   TraceLevel,
 		TimeFormat: defaultTimeFormat,
 		FullPath:   false,
 	})
@@ -298,12 +298,13 @@ func (l *logger) Panic(msg string, data ...interface{}) {
 		pos := l.getPath()
 
 		t := fasttemplate.New(l.Format, "{{", "}}")
-		panic(t.ExecuteString(map[string]any{
+		fmt.Println(t.ExecuteString(map[string]any{
 			"Level": l.panicStr,
 			"Time":  l.t(),
 			"Path":  pos,
 			"Msg":   fmt.Sprintf(msg, data...),
 		}))
+		panic(fmt.Sprintf(msg, data...))
 	}
 }
 
