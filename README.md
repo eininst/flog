@@ -53,11 +53,11 @@ func init() {
 ```
 
 ```text
-2022.08.28 02:14:58.858 [INFO] /Users/wangziqing/go/fastgo/cmd/consumer/test.go:16 Something noteworthy happened!
-2022.08.28 02:14:58.859 [WARN] /Users/wangziqing/go/fastgo/cmd/consumer/test.go:17 You should probably take a look at this.
-2022.08.28 02:14:58.859 [ERROR] /Users/wangziqing/go/fastgo/cmd/consumer/test.go:18 Something failed but I'm not quitting.
-2022.08.28 02:14:58.859 [INFO] /Users/wangziqing/go/fastgo/cmd/consumer/test.go:20 My name is jack
-2022.08.28 02:14:58.859 [FATAL] /Users/wangziqing/go/fastgo/cmd/consumer/test.go:25 Bye.
+[INFO] 2022.08.28 02:24:01.219 /Users/wangziqing/go/fastgo/cmd/consumer/test.go:16 Something noteworthy happened!
+[WARN] 2022.08.28 02:24:01.219 /Users/wangziqing/go/fastgo/cmd/consumer/test.go:17 You should probably take a look at this.
+[ERROR] 2022.08.28 02:24:01.219 /Users/wangziqing/go/fastgo/cmd/consumer/test.go:18 Something failed but I'm not quitting.
+[INFO] 2022.08.28 02:24:01.219 /Users/wangziqing/go/fastgo/cmd/consumer/test.go:20 My name is jack
+[FATAL] 2022.08.28 02:24:01.219 /Users/wangziqing/go/fastgo/cmd/consumer/test.go:25 Bye.
 ```
 ## License
 *MIT*
