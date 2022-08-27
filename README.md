@@ -1,0 +1,2 @@
+# fastgo-log
+fastgo-log
