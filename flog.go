@@ -98,7 +98,7 @@ type logger struct {
 }
 
 var (
-	defaultFormat     = "{{Time}} {{Level}} {{Path}} {{Msg}}"
+	defaultFormat     = "${Time} ${Level} ${Path} ${Msg}"
 	defaultTimeFormat = "2006/01/02 15:04:05"
 	std               = New(Config{
 		Format:     defaultFormat,
@@ -173,7 +173,7 @@ func New(config Config) Interface {
 }
 
 func Sprintf(format string, h map[string]any) string {
-	t := fasttemplate.New(format, "{{", "}}")
+	t := fasttemplate.New(format, "${", "}")
 	return t.ExecuteString(h)
 }
 func (l *logger) SetLevel(level LogLevel) {
@@ -206,13 +206,11 @@ func (l *logger) SetConfig(cfg Config) {
 // Trace print messages
 func (l *logger) Trace(msg string, data ...interface{}) {
 	if l.LogLevel >= TraceLevel {
-		pos := l.getPath()
-
-		t := fasttemplate.New(l.Format, "{{", "}}")
-		fmt.Println(t.ExecuteString(map[string]any{
+		path := l.getPath()
+		fmt.Println(Sprintf(l.Format, map[string]any{
 			"Level": l.traceStr,
 			"Time":  l.t(),
-			"Path":  pos,
+			"Path":  path,
 			"Msg":   fmt.Sprintf(msg, data...),
 		}))
 	}
@@ -221,13 +219,11 @@ func (l *logger) Trace(msg string, data ...interface{}) {
 // Debug print messages
 func (l *logger) Debug(msg string, data ...interface{}) {
 	if l.LogLevel >= DebugLevel {
-		pos := l.getPath()
-
-		t := fasttemplate.New(l.Format, "{{", "}}")
-		fmt.Println(t.ExecuteString(map[string]any{
+		path := l.getPath()
+		fmt.Println(Sprintf(l.Format, map[string]any{
 			"Level": l.debugStr,
 			"Time":  l.t(),
-			"Path":  pos,
+			"Path":  path,
 			"Msg":   fmt.Sprintf(msg, data...),
 		}))
 	}
@@ -236,13 +232,11 @@ func (l *logger) Debug(msg string, data ...interface{}) {
 // Info print info
 func (l *logger) Info(msg string, data ...interface{}) {
 	if l.LogLevel >= InfoLevel {
-		pos := l.getPath()
-
-		t := fasttemplate.New(l.Format, "{{", "}}")
-		fmt.Println(t.ExecuteString(map[string]any{
+		path := l.getPath()
+		fmt.Println(Sprintf(l.Format, map[string]any{
 			"Level": l.infoStr,
 			"Time":  l.t(),
-			"Path":  pos,
+			"Path":  path,
 			"Msg":   fmt.Sprintf(msg, data...),
 		}))
 	}
@@ -251,13 +245,11 @@ func (l *logger) Info(msg string, data ...interface{}) {
 // Warn print warn messages
 func (l *logger) Warn(msg string, data ...interface{}) {
 	if l.LogLevel >= WarnLevel {
-		pos := l.getPath()
-
-		t := fasttemplate.New(l.Format, "{{", "}}")
-		fmt.Println(t.ExecuteString(map[string]any{
+		path := l.getPath()
+		fmt.Println(Sprintf(l.Format, map[string]any{
 			"Level": l.warnStr,
 			"Time":  l.t(),
-			"Path":  pos,
+			"Path":  path,
 			"Msg":   fmt.Sprintf(msg, data...),
 		}))
 	}
@@ -266,12 +258,11 @@ func (l *logger) Warn(msg string, data ...interface{}) {
 // Error print error messages
 func (l *logger) Error(msg string, data ...interface{}) {
 	if l.LogLevel >= ErrorLevel {
-		pos := l.getPath()
-		t := fasttemplate.New(l.Format, "{{", "}}")
-		fmt.Println(t.ExecuteString(map[string]any{
+		path := l.getPath()
+		fmt.Println(Sprintf(l.Format, map[string]any{
 			"Level": l.errStr,
 			"Time":  l.t(),
-			"Path":  pos,
+			"Path":  path,
 			"Msg":   fmt.Sprintf(msg, data...),
 		}))
 	}
@@ -280,13 +271,11 @@ func (l *logger) Error(msg string, data ...interface{}) {
 // Fatal print error messages
 func (l *logger) Fatal(msg string, data ...interface{}) {
 	if l.LogLevel >= ErrorLevel {
-		pos := l.getPath()
-
-		t := fasttemplate.New(l.Format, "{{", "}}")
-		fmt.Println(t.ExecuteString(map[string]any{
+		path := l.getPath()
+		fmt.Println(Sprintf(l.Format, map[string]any{
 			"Level": l.fatalStr,
 			"Time":  l.t(),
-			"Path":  pos,
+			"Path":  path,
 			"Msg":   fmt.Sprintf(msg, data...),
 		}))
 		os.Exit(1)
@@ -295,13 +284,11 @@ func (l *logger) Fatal(msg string, data ...interface{}) {
 
 func (l *logger) Panic(msg string, data ...interface{}) {
 	if l.LogLevel >= ErrorLevel {
-		pos := l.getPath()
-
-		t := fasttemplate.New(l.Format, "{{", "}}")
-		fmt.Println(t.ExecuteString(map[string]any{
+		path := l.getPath()
+		fmt.Println(Sprintf(l.Format, map[string]any{
 			"Level": l.panicStr,
 			"Time":  l.t(),
-			"Path":  pos,
+			"Path":  path,
 			"Msg":   fmt.Sprintf(msg, data...),
 		}))
 		panic(fmt.Sprintf(msg, data...))
