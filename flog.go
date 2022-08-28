@@ -123,7 +123,7 @@ var (
 		LogLevel:   TraceLevel,
 		TimeFormat: DefaultTimeFormat,
 		FullPath:   false,
-		MsgMinLen:  42,
+		MsgMinLen:  48,
 	}
 	std = New(defaultConfig)
 )
