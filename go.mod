@@ -1,4 +1,4 @@
-module github.com/eininst/fastgo-log
+module github.com/eininst/flog
 
 go 1.19
 
