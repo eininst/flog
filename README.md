@@ -98,8 +98,11 @@ func main() {
 ```go
 func init() {
     flog.SetLevel(flog.InfoLevel)
+	
+	flog.SetTimeFormat("2006.01.02 15:04:05.000")
+	
     flog.SetFormat("${level} ${time} ${path} ${msg}\t${fields}")
-    flog.SetTimeFormat("2006.01.02 15:04:05.000")
+   
     flog.SetFullPath(true)
 }
 ```
