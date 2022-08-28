@@ -131,6 +131,9 @@ var (
 func DumpJson() {
 	std.DumpJson()
 }
+func DefaultInstance() Interface {
+	return std
+}
 func SetLevel(level LogLevel) {
 	std.SetLevel(level)
 }
