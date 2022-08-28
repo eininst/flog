@@ -15,12 +15,10 @@ var sDir string
 
 func init() {
 	_, file, _, _ := runtime.Caller(0)
-	// compatible solution to get gorm source directory with various operating systems
 	sDir = regexp.MustCompile(`utils.utils\.go`).ReplaceAllString(file, "")
 }
 
 func entryFileWithLineNum() string {
-	// the second caller usually from gorm internal, so set i start from 2
 	for i := 2; i < 15; i++ {
 		_, file, line, ok := runtime.Caller(i)
 		if ok && (!strings.HasPrefix(file, sDir) || strings.HasSuffix(file, "_test.go")) {
