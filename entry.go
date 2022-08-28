@@ -7,6 +7,7 @@ import (
 	"os"
 	"regexp"
 	"runtime"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -202,14 +203,16 @@ func (e *Entry) fieldsFormat(color string) any {
 		return e.data
 	}
 	r := ""
-	i := 0
-
-	for k, v := range e.data {
+	var names []string
+	for name := range e.data {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for i, name := range names {
 		if i > 0 {
 			r += " "
 		}
-		r += fmt.Sprintf("%s%s%s=%v", color, k, Reset, v)
-		i += 1
+		r += fmt.Sprintf("%s%s%s=%v", color, name, Reset, e.data[name])
 	}
 	return r
 }
