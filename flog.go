@@ -1,6 +1,8 @@
 package flog
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/valyala/fasttemplate"
 	"os"
@@ -68,6 +70,7 @@ const (
 
 // Config logger config
 type Config struct {
+	Json       bool
 	Format     string
 	TimeFormat string
 	LogLevel   LogLevel
@@ -75,32 +78,45 @@ type Config struct {
 }
 
 type Interface interface {
+	DumpJson()
 	SetConfig(cfg Config)
 	SetLevel(LogLevel)
 	SetFormat(string)
 	SetTimeFormat(string)
 	SetFullPath(bool)
 
-	Trace(string, ...interface{})
-	Debug(string, ...interface{})
-	Info(string, ...interface{})
-	Warn(string, ...interface{})
-	Error(string, ...interface{})
-	Fatal(string, ...interface{})
-	Panic(string, ...interface{})
+	With(fields Fields) *Entry
+	Trace(a ...any)
+	Tracef(format string, a ...any)
+	Debug(a ...any)
+	Debugf(format string, a ...any)
+	Info(a ...any)
+	Infof(format string, a ...any)
+	Warn(a ...any)
+	Warnf(format string, a ...any)
+	Error(a ...any)
+	Errorf(format string, a ...any)
+	Fatal(a ...any)
+	Fatalf(format string, a ...any)
+	Panic(a ...any)
+	Panicf(format string, a ...any)
 }
 
 type logger struct {
 	mu MutexWrap
+
+	entryPool sync.Pool
 	Config
 	traceStr, debugStr, infoStr, warnStr,
 	errStr, fatalStr, panicStr string
+	writeFields bool
 }
 
 var (
-	defaultFormat     = "${Time} ${Level} ${Path} ${Msg}"
+	defaultFormat     = "${time} ${level} ${path} ${msg}\t${fields}"
 	defaultTimeFormat = "2006/01/02 15:04:05"
 	std               = New(Config{
+		Json:       false,
 		Format:     defaultFormat,
 		LogLevel:   TraceLevel,
 		TimeFormat: defaultTimeFormat,
@@ -108,67 +124,115 @@ var (
 	})
 )
 
+func DumpJson() {
+	std.DumpJson()
+}
 func SetLevel(level LogLevel) {
 	std.SetLevel(level)
 }
+
 func SetFormat(format string) {
 	std.SetFormat(format)
 }
+
 func SetTimeFormat(format string) {
 	std.SetTimeFormat(format)
 }
+
 func SetFullPath(fullPath bool) {
 	std.SetFullPath(fullPath)
 }
 
-func Trace(msg string, data ...interface{}) {
-	std.Trace(msg, data...)
+func With(fields Fields) *Entry {
+	return std.With(fields)
+}
+func Trace(a ...any) {
+	std.Trace(a...)
 }
 
-func Debug(msg string, data ...interface{}) {
-	std.Debug(msg, data...)
+func Tracef(format string, a ...any) {
+	std.Tracef(format, a...)
 }
 
-func Info(msg string, data ...interface{}) {
-	std.Info(msg, data...)
+func Debug(a ...any) {
+	std.Debug(a...)
 }
 
-func Warn(msg string, data ...interface{}) {
-	std.Warn(msg, data...)
+func Debugf(format string, a ...any) {
+	std.Debugf(format, a...)
 }
 
-func Error(msg string, data ...interface{}) {
-	std.Error(msg, data...)
+func Info(a ...any) {
+	std.Info(a...)
 }
 
-func Fatal(msg string, data ...interface{}) {
-	std.Fatal(msg, data...)
+func Infof(format string, a ...any) {
+	std.Infof(format, a...)
 }
 
-func Panic(msg string, data ...interface{}) {
-	std.Panic(msg, data...)
+func Warn(a ...any) {
+	std.Warn(a...)
 }
+
+func Warnf(format string, a ...any) {
+	std.Warnf(format, a...)
+}
+
+func Error(a ...any) {
+	std.Error(a...)
+}
+
+func Errorf(format string, a ...any) {
+	std.Errorf(format, a...)
+}
+
+func Fatal(a ...any) {
+	std.Fatal(a...)
+}
+
+func Fatalf(format string, a ...any) {
+	std.Fatalf(format, a...)
+}
+
+func Panic(a ...any) {
+	std.Panic(a...)
+}
+
+func Panicf(format string, a ...any) {
+	std.Panicf(format, a...)
+}
+
+var (
+	traceStr = White + "[TRACE]" + Reset
+	debugStr = White + "[DEBUG]" + Reset
+	infoStr  = Cyan + "[INFO]" + Reset
+	warnStr  = Yellow + "[WARN]" + Reset
+	errStr   = Red + "[ERROR]" + Reset
+	fatalStr = Red + "[FATAL]" + Reset
+	panicStr = Red + "[PANIC]" + Reset
+
+	levelStrMap = map[string]string{
+		traceStr: "TRACE",
+		debugStr: "DEBUG",
+		infoStr:  "INFO",
+		warnStr:  "WARN",
+		errStr:   "ERROR",
+		fatalStr: "FATAL",
+		panicStr: "PANIC",
+	}
+)
 
 func New(config Config) Interface {
-	var (
-		traceStr = White + "[TRACE]" + Reset
-		debugStr = White + "[DEBUG]" + Reset
-		infoStr  = Cyan + "[INFO]" + Reset
-		warnStr  = Yellow + "[WARN]" + Reset
-		errStr   = Red + "[ERROR]" + Reset
-		fatalStr = Red + "[FATAL]" + Reset
-		panicStr = Red + "[PANIC]" + Reset
-	)
-
 	return &logger{
-		Config:   config,
-		traceStr: traceStr,
-		debugStr: debugStr,
-		infoStr:  infoStr,
-		warnStr:  warnStr,
-		errStr:   errStr,
-		fatalStr: fatalStr,
-		panicStr: panicStr,
+		Config:      config,
+		traceStr:    traceStr,
+		debugStr:    debugStr,
+		infoStr:     infoStr,
+		warnStr:     warnStr,
+		errStr:      errStr,
+		fatalStr:    fatalStr,
+		panicStr:    panicStr,
+		writeFields: strings.Contains(config.Format, "${fields}"),
 	}
 }
 
@@ -176,6 +240,12 @@ func Sprintf(format string, h map[string]any) string {
 	t := fasttemplate.New(format, "${", "}")
 	return t.ExecuteString(h)
 }
+func (l *logger) DumpJson() {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.Json = true
+}
+
 func (l *logger) SetLevel(level LogLevel) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -203,98 +273,147 @@ func (l *logger) SetConfig(cfg Config) {
 	l.Config = cfg
 }
 
+func (l *logger) With(fields Fields) *Entry {
+	return NewEntry(l).With(fields)
+}
+
 // Trace print messages
-func (l *logger) Trace(msg string, data ...interface{}) {
+func (l *logger) Trace(a ...any) {
 	if l.LogLevel >= TraceLevel {
-		path := l.getPath()
-		fmt.Println(Sprintf(l.Format, map[string]any{
-			"Level": l.traceStr,
-			"Time":  l.t(),
-			"Path":  path,
-			"Msg":   fmt.Sprintf(msg, data...),
-		}))
+		f := l.formatData(a...)
+		fmt.Println(l.sprintf(l.traceStr, f, nil, a...))
+	}
+}
+func (l *logger) Tracef(format string, a ...any) {
+	if l.LogLevel >= TraceLevel {
+		fmt.Println(l.sprintf(l.traceStr, format, nil, a...))
 	}
 }
 
 // Debug print messages
-func (l *logger) Debug(msg string, data ...interface{}) {
+func (l *logger) Debug(a ...any) {
 	if l.LogLevel >= DebugLevel {
-		path := l.getPath()
-		fmt.Println(Sprintf(l.Format, map[string]any{
-			"Level": l.debugStr,
-			"Time":  l.t(),
-			"Path":  path,
-			"Msg":   fmt.Sprintf(msg, data...),
-		}))
+		f := l.formatData(a...)
+		fmt.Println(l.sprintf(l.debugStr, f, nil, a...))
+	}
+}
+func (l *logger) Debugf(format string, a ...interface{}) {
+	if l.LogLevel >= DebugLevel {
+		fmt.Println(l.sprintf(l.debugStr, format, nil, a...))
 	}
 }
 
 // Info print info
-func (l *logger) Info(msg string, data ...interface{}) {
+func (l *logger) Info(a ...any) {
 	if l.LogLevel >= InfoLevel {
-		path := l.getPath()
-		fmt.Println(Sprintf(l.Format, map[string]any{
-			"Level": l.infoStr,
-			"Time":  l.t(),
-			"Path":  path,
-			"Msg":   fmt.Sprintf(msg, data...),
-		}))
+		f := l.formatData(a...)
+		fmt.Println(l.sprintf(l.infoStr, f, nil, a...))
+	}
+}
+
+func (l *logger) Infof(format string, a ...any) {
+	if l.LogLevel >= InfoLevel {
+		fmt.Println(l.sprintf(l.infoStr, format, nil, a...))
 	}
 }
 
 // Warn print warn messages
-func (l *logger) Warn(msg string, data ...interface{}) {
+func (l *logger) Warn(a ...any) {
 	if l.LogLevel >= WarnLevel {
-		path := l.getPath()
-		fmt.Println(Sprintf(l.Format, map[string]any{
-			"Level": l.warnStr,
-			"Time":  l.t(),
-			"Path":  path,
-			"Msg":   fmt.Sprintf(msg, data...),
-		}))
+		f := l.formatData(a...)
+		fmt.Println(l.sprintf(l.warnStr, f, nil, a...))
+	}
+}
+func (l *logger) Warnf(format string, a ...any) {
+	if l.LogLevel >= WarnLevel {
+		fmt.Println(l.sprintf(l.warnStr, format, nil, a...))
 	}
 }
 
 // Error print error messages
-func (l *logger) Error(msg string, data ...interface{}) {
+func (l *logger) Error(a ...any) {
 	if l.LogLevel >= ErrorLevel {
-		path := l.getPath()
-		fmt.Println(Sprintf(l.Format, map[string]any{
-			"Level": l.errStr,
-			"Time":  l.t(),
-			"Path":  path,
-			"Msg":   fmt.Sprintf(msg, data...),
-		}))
+		f := l.formatData(a...)
+		fmt.Println(l.sprintf(l.errStr, f, nil, a...))
+	}
+}
+func (l *logger) Errorf(format string, a ...any) {
+	if l.LogLevel >= ErrorLevel {
+		fmt.Println(l.sprintf(l.errStr, format, nil, a...))
 	}
 }
 
 // Fatal print error messages
-func (l *logger) Fatal(msg string, data ...interface{}) {
+func (l *logger) Fatal(a ...any) {
 	if l.LogLevel >= ErrorLevel {
-		path := l.getPath()
-		fmt.Println(Sprintf(l.Format, map[string]any{
-			"Level": l.fatalStr,
-			"Time":  l.t(),
-			"Path":  path,
-			"Msg":   fmt.Sprintf(msg, data...),
-		}))
+		f := l.formatData(a...)
+		fmt.Println(l.sprintf(l.fatalStr, f, nil, a...))
+		os.Exit(1)
+	}
+}
+func (l *logger) Fatalf(format string, a ...any) {
+	if l.LogLevel >= ErrorLevel {
+		fmt.Println(l.sprintf(l.fatalStr, format, nil, a...))
 		os.Exit(1)
 	}
 }
 
-func (l *logger) Panic(msg string, data ...interface{}) {
+func (l *logger) Panic(a ...any) {
 	if l.LogLevel >= ErrorLevel {
-		path := l.getPath()
-		fmt.Println(Sprintf(l.Format, map[string]any{
-			"Level": l.panicStr,
-			"Time":  l.t(),
-			"Path":  path,
-			"Msg":   fmt.Sprintf(msg, data...),
-		}))
-		panic(fmt.Sprintf(msg, data...))
+		f := l.formatData(a...)
+		r := l.sprintf(l.panicStr, f, nil, a...)
+		fmt.Println(r)
+		panic(r)
+	}
+}
+func (l *logger) Panicf(format string, a ...any) {
+	if l.LogLevel >= ErrorLevel {
+		r := l.sprintf(l.panicStr, format, nil, a...)
+		fmt.Println(r)
+		panic(errors.New(r))
 	}
 }
 
+func (l *logger) formatData(a ...any) string {
+	f := ""
+	for argNum := range a {
+		if argNum > 0 {
+			f += " "
+		}
+		f += "%v"
+	}
+	return f
+}
+func (l *logger) sprintf(levelStr string, format string, fields any, a ...any) string {
+	path := l.getPath()
+	data := map[string]any{
+		"level": levelStr,
+		"time":  l.t(),
+		"path":  path,
+		"msg":   fmt.Sprintf(format, a...),
+	}
+	if fields != nil && l.writeFields {
+		if l.Json {
+			for k, v := range fields.(Fields) {
+				data[k] = v
+			}
+			delete(data, "fields")
+		} else {
+			data["fields"] = fields
+		}
+	}
+	if l.Json {
+		s, ok := levelStrMap[data["level"].(string)]
+		if ok {
+			data["level"] = s
+		}
+		jsonStr, _ := json.Marshal(data)
+
+		return string(jsonStr)
+	} else {
+		return Sprintf(l.Format, data)
+	}
+}
 func (l *logger) t() string {
 	return time.Now().Format(l.TimeFormat)
 }
