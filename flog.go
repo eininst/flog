@@ -114,16 +114,18 @@ type logger struct {
 }
 
 var (
-	defaultFormat     = "${time} ${level} ${path} ${msg}\t${fields}"
-	defaultTimeFormat = "2006/01/02 15:04:05"
-	std               = New(Config{
+	DefaultFormat     = "${time} ${level} ${path} ${msg}\t${fields}"
+	DefaultTimeFormat = "2006/01/02 15:04:05"
+
+	defaultConfig = Config{
 		Json:       false,
-		Format:     defaultFormat,
+		Format:     DefaultFormat,
 		LogLevel:   TraceLevel,
-		TimeFormat: defaultTimeFormat,
+		TimeFormat: DefaultTimeFormat,
 		FullPath:   false,
 		MsgMinLen:  42,
-	})
+	}
+	std = New(defaultConfig)
 )
 
 func DumpJson() {
@@ -228,6 +230,18 @@ var (
 )
 
 func New(config Config) Interface {
+	if config.Format == "" {
+		config.Format = defaultConfig.Format
+	}
+	if config.TimeFormat == "" {
+		config.TimeFormat = defaultConfig.TimeFormat
+	}
+	if config.LogLevel == 0 {
+		config.LogLevel = defaultConfig.LogLevel
+	}
+	if config.MsgMinLen == 0 {
+		config.MsgMinLen = defaultConfig.MsgMinLen
+	}
 	return &logger{
 		Config:      config,
 		traceStr:    traceStr,
