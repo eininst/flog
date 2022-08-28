@@ -14,19 +14,19 @@ import (
 	"time"
 )
 
-var gormSourceDir string
+var sourceDir string
 
 func init() {
 	_, file, _, _ := runtime.Caller(0)
 	// compatible solution to get gorm source directory with various operating systems
-	gormSourceDir = regexp.MustCompile(`utils.utils\.go`).ReplaceAllString(file, "")
+	sourceDir = regexp.MustCompile(`utils.utils\.go`).ReplaceAllString(file, "")
 }
 
 func fileWithLineNum() string {
 	// the second caller usually from gorm internal, so set i start from 2
 	for i := 2; i < 15; i++ {
 		_, file, line, ok := runtime.Caller(i)
-		if ok && (!strings.HasPrefix(file, gormSourceDir) || strings.HasSuffix(file, "_test.go")) {
+		if ok && (!strings.HasPrefix(file, sourceDir) || strings.HasSuffix(file, "_test.go")) {
 			return file + ":" + strconv.FormatInt(int64(line), 10)
 		}
 	}
@@ -43,6 +43,7 @@ const (
 	Magenta     = "\033[35m"
 	Cyan        = "\033[36m"
 	White       = "\033[37m"
+	GreenBold   = "\033[32;1m"
 	BlueBold    = "\033[34;1m"
 	MagentaBold = "\033[35;1m"
 	RedBold     = "\033[31;1m"
@@ -75,6 +76,7 @@ type Config struct {
 	TimeFormat string
 	LogLevel   LogLevel
 	FullPath   bool
+	MsgMinLen  int
 }
 
 type Interface interface {
@@ -84,6 +86,7 @@ type Interface interface {
 	SetFormat(string)
 	SetTimeFormat(string)
 	SetFullPath(bool)
+	SetMsgMinLen(mlen int)
 
 	With(fields Fields) *Entry
 	Trace(a ...any)
@@ -121,6 +124,7 @@ var (
 		LogLevel:   TraceLevel,
 		TimeFormat: defaultTimeFormat,
 		FullPath:   false,
+		MsgMinLen:  42,
 	})
 )
 
@@ -143,6 +147,9 @@ func SetFullPath(fullPath bool) {
 	std.SetFullPath(fullPath)
 }
 
+func SetMsgMinLen(mlen int) {
+	std.SetMsgMinLen(mlen)
+}
 func With(fields Fields) *Entry {
 	return std.With(fields)
 }
@@ -267,6 +274,11 @@ func (l *logger) SetFullPath(fullPath bool) {
 	l.FullPath = fullPath
 }
 
+func (l *logger) SetMsgMinLen(mlen int) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.MsgMinLen = mlen
+}
 func (l *logger) SetConfig(cfg Config) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -281,12 +293,12 @@ func (l *logger) With(fields Fields) *Entry {
 func (l *logger) Trace(a ...any) {
 	if l.LogLevel >= TraceLevel {
 		f := l.formatData(a...)
-		fmt.Println(l.sprintf(l.traceStr, f, nil, a...))
+		fmt.Println(l.sprintf(l.traceStr, f, a...))
 	}
 }
 func (l *logger) Tracef(format string, a ...any) {
 	if l.LogLevel >= TraceLevel {
-		fmt.Println(l.sprintf(l.traceStr, format, nil, a...))
+		fmt.Println(l.sprintf(l.traceStr, format, a...))
 	}
 }
 
@@ -294,12 +306,12 @@ func (l *logger) Tracef(format string, a ...any) {
 func (l *logger) Debug(a ...any) {
 	if l.LogLevel >= DebugLevel {
 		f := l.formatData(a...)
-		fmt.Println(l.sprintf(l.debugStr, f, nil, a...))
+		fmt.Println(l.sprintf(l.debugStr, f, a...))
 	}
 }
 func (l *logger) Debugf(format string, a ...interface{}) {
 	if l.LogLevel >= DebugLevel {
-		fmt.Println(l.sprintf(l.debugStr, format, nil, a...))
+		fmt.Println(l.sprintf(l.debugStr, format, a...))
 	}
 }
 
@@ -307,13 +319,13 @@ func (l *logger) Debugf(format string, a ...interface{}) {
 func (l *logger) Info(a ...any) {
 	if l.LogLevel >= InfoLevel {
 		f := l.formatData(a...)
-		fmt.Println(l.sprintf(l.infoStr, f, nil, a...))
+		fmt.Println(l.sprintf(l.infoStr, f, a...))
 	}
 }
 
 func (l *logger) Infof(format string, a ...any) {
 	if l.LogLevel >= InfoLevel {
-		fmt.Println(l.sprintf(l.infoStr, format, nil, a...))
+		fmt.Println(l.sprintf(l.infoStr, format, a...))
 	}
 }
 
@@ -321,12 +333,12 @@ func (l *logger) Infof(format string, a ...any) {
 func (l *logger) Warn(a ...any) {
 	if l.LogLevel >= WarnLevel {
 		f := l.formatData(a...)
-		fmt.Println(l.sprintf(l.warnStr, f, nil, a...))
+		fmt.Println(l.sprintf(l.warnStr, f, a...))
 	}
 }
 func (l *logger) Warnf(format string, a ...any) {
 	if l.LogLevel >= WarnLevel {
-		fmt.Println(l.sprintf(l.warnStr, format, nil, a...))
+		fmt.Println(l.sprintf(l.warnStr, format, a...))
 	}
 }
 
@@ -334,12 +346,12 @@ func (l *logger) Warnf(format string, a ...any) {
 func (l *logger) Error(a ...any) {
 	if l.LogLevel >= ErrorLevel {
 		f := l.formatData(a...)
-		fmt.Println(l.sprintf(l.errStr, f, nil, a...))
+		fmt.Println(l.sprintf(l.errStr, f, a...))
 	}
 }
 func (l *logger) Errorf(format string, a ...any) {
 	if l.LogLevel >= ErrorLevel {
-		fmt.Println(l.sprintf(l.errStr, format, nil, a...))
+		fmt.Println(l.sprintf(l.errStr, format, a...))
 	}
 }
 
@@ -347,13 +359,13 @@ func (l *logger) Errorf(format string, a ...any) {
 func (l *logger) Fatal(a ...any) {
 	if l.LogLevel >= ErrorLevel {
 		f := l.formatData(a...)
-		fmt.Println(l.sprintf(l.fatalStr, f, nil, a...))
+		fmt.Println(l.sprintf(l.fatalStr, f, a...))
 		os.Exit(1)
 	}
 }
 func (l *logger) Fatalf(format string, a ...any) {
 	if l.LogLevel >= ErrorLevel {
-		fmt.Println(l.sprintf(l.fatalStr, format, nil, a...))
+		fmt.Println(l.sprintf(l.fatalStr, format, a...))
 		os.Exit(1)
 	}
 }
@@ -361,14 +373,14 @@ func (l *logger) Fatalf(format string, a ...any) {
 func (l *logger) Panic(a ...any) {
 	if l.LogLevel >= ErrorLevel {
 		f := l.formatData(a...)
-		r := l.sprintf(l.panicStr, f, nil, a...)
+		r := l.sprintf(l.panicStr, f, a...)
 		fmt.Println(r)
 		panic(r)
 	}
 }
 func (l *logger) Panicf(format string, a ...any) {
 	if l.LogLevel >= ErrorLevel {
-		r := l.sprintf(l.panicStr, format, nil, a...)
+		r := l.sprintf(l.panicStr, format, a...)
 		fmt.Println(r)
 		panic(errors.New(r))
 	}
@@ -384,7 +396,7 @@ func (l *logger) formatData(a ...any) string {
 	}
 	return f
 }
-func (l *logger) sprintf(levelStr string, format string, fields any, a ...any) string {
+func (l *logger) sprintf(levelStr string, format string, a ...any) string {
 	path := l.getPath()
 	data := map[string]any{
 		"level": levelStr,
@@ -392,16 +404,7 @@ func (l *logger) sprintf(levelStr string, format string, fields any, a ...any) s
 		"path":  path,
 		"msg":   fmt.Sprintf(format, a...),
 	}
-	if fields != nil && l.writeFields {
-		if l.Json {
-			for k, v := range fields.(Fields) {
-				data[k] = v
-			}
-			delete(data, "fields")
-		} else {
-			data["fields"] = fields
-		}
-	}
+
 	if l.Json {
 		s, ok := levelStrMap[data["level"].(string)]
 		if ok {
