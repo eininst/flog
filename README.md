@@ -57,6 +57,8 @@ import (
 )
 
 func main() {
+	flog.Debug("Start with fields！")
+
 	flog.With(flog.Fields{
 		"animal": "walrus",
 		"size":   10,
@@ -84,11 +86,12 @@ func main() {
 ```
 
 ```textmate
-2022/08/28 19:09:41 [INFO] main.go:11 A group of walrus emerges from the ocean          animal=walrus size=10
-2022/08/28 19:09:41 [WARN] main.go:16 The group's number increased tremendously!        omg=true number=122
-2022/08/28 19:09:41 [ERROR] main.go:22 The ice breaks!                                  name=wzq omg=true number=100
-2022/08/28 19:09:41 [INFO] main.go:29 I'll be logged with common and other field        common=this is a common field other=I also should be logged always
-2022/08/28 19:09:41 [INFO] main.go:30 Me too                                            other=I also should be logged always common=this is a common field
+2022/08/28 19:21:36 [DEBUG] main.go:16 Start with fields！      
+2022/08/28 19:21:36 [INFO] main.go:21 A group of walrus emerges from the ocean          animal=walrus size=10
+2022/08/28 19:21:36 [WARN] main.go:26 The group's number increased tremendously!        number=122 omg=true
+2022/08/28 19:21:36 [ERROR] main.go:32 The ice breaks!                                  number=100 name=wzq omg=true
+2022/08/28 19:21:36 [INFO] main.go:39 I'll be logged with common and other field        common=this is a common field other=I also should be logged always
+2022/08/28 19:21:36 [INFO] main.go:40 Me too                                            common=this is a common field other=I also should be logged always
 ```
 
 > You can customize it all you want:
@@ -102,14 +105,11 @@ func init() {
 ```
 
 ```text
-[INFO] 2022.08.28 19:15:42.039 /Users/wangziqing/go/flog/test/main.go:17 Something noteworthy happened! 
-[WARN] 2022.08.28 19:15:42.039 /Users/wangziqing/go/flog/test/main.go:18 You should probably take a look at this.       
-[ERROR] 2022.08.28 19:15:42.039 /Users/wangziqing/go/flog/test/main.go:19 Something failed but I'm not quitting.        
-[INFO] 2022.08.28 19:15:42.039 /Users/wangziqing/go/flog/test/main.go:21 1 2 3  
-[INFO] 2022.08.28 19:15:42.039 /Users/wangziqing/go/flog/test/main.go:22 My name is jack        
-[INFO] 2022.08.28 19:15:42.039 /Users/wangziqing/go/flog/test/main.go:25 My name is tomi        
-[INFO] 2022.08.28 19:15:42.039 /Users/wangziqing/go/flog/test/main.go:30 A group of walrus emerges from the ocean       size=10 animal=walrus
-[FATAL] 2022.08.28 19:15:42.039 /Users/wangziqing/go/flog/test/main.go:33 Bye.  
+[INFO] 2022.08.28 19:22:02.108 /Users/wangziqing/go/flog/test/main.go:21 A group of walrus emerges from the ocean       size=10 animal=walrus
+[WARN] 2022.08.28 19:22:02.109 /Users/wangziqing/go/flog/test/main.go:26 The group's number increased tremendously!     omg=true number=122
+[ERROR] 2022.08.28 19:22:02.109 /Users/wangziqing/go/flog/test/main.go:32 The ice breaks!                               name=wzq omg=true number=100
+[INFO] 2022.08.28 19:22:02.109 /Users/wangziqing/go/flog/test/main.go:39 I'll be logged with common and other field     other=I also should be logged always common=this is a common field
+[INFO] 2022.08.28 19:22:02.109 /Users/wangziqing/go/flog/test/main.go:40 Me too                                         other=I also should be logged always common=this is a common field
 ```
 
 
@@ -121,14 +121,12 @@ func init() {
 ```
 
 ```textmate
-{"level":"INFO","msg":"Something noteworthy happened!","path":"/Users/wangziqing/go/flog/test/main.go:18","time":"2022.08.28 19:17:45.394"}
-{"level":"WARN","msg":"You should probably take a look at this.","path":"/Users/wangziqing/go/flog/test/main.go:19","time":"2022.08.28 19:17:45.395"}
-{"level":"ERROR","msg":"Something failed but I'm not quitting.","path":"/Users/wangziqing/go/flog/test/main.go:20","time":"2022.08.28 19:17:45.395"}
-{"level":"INFO","msg":"1 2 3","path":"/Users/wangziqing/go/flog/test/main.go:22","time":"2022.08.28 19:17:45.395"}
-{"level":"INFO","msg":"My name is jack","path":"/Users/wangziqing/go/flog/test/main.go:23","time":"2022.08.28 19:17:45.395"}
-{"level":"INFO","msg":"My name is tomi","path":"/Users/wangziqing/go/flog/test/main.go:26","time":"2022.08.28 19:17:45.395"}
-{"animal":"walrus","level":"INFO","msg":"A group of walrus emerges from the ocean  ","path":"/Users/wangziqing/go/flog/test/main.go:31","size":10,"time":"2022.08.28 19:17:45.395"}
-{"level":"FATAL","msg":"Bye.","path":"/Users/wangziqing/go/flog/test/main.go:34","time":"2022.08.28 19:17:45.395"}
+{"level":"DEBUG","msg":"Start with fields！","path":"main.go:12","time":"2022/08/28 19:22:31"}
+{"animal":"walrus","level":"INFO","msg":"A group of walrus emerges from the ocean  ","path":"main.go:17","size":10,"time":"2022/08/28 19:22:31"}
+{"level":"WARN","msg":"The group's number increased tremendously!","number":122,"omg":true,"path":"main.go:22","time":"2022/08/28 19:22:31"}
+{"level":"ERROR","msg":"The ice breaks!                           ","name":"wzq","number":100,"omg":true,"path":"main.go:28","time":"2022/08/28 19:22:31"}
+{"common":"this is a common field","level":"INFO","msg":"I'll be logged with common and other field","other":"I also should be logged always","path":"main.go:35","time":"2022/08/28 19:22:31"}
+{"common":"this is a common field","level":"INFO","msg":"Me too                                    ","other":"I also should be logged always","path":"main.go:36","time":"2022/08/28 19:22:31"}
 ```
 ## License
 *MIT*
