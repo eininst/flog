@@ -161,10 +161,13 @@ func (e *Entry) getPath() string {
 func (e *Entry) entrySprintf(levelStr string, format string, fields any, a ...any) string {
 	path := e.getPath()
 	msg := fmt.Sprintf(format, a...)
-	mlen := len(msg)
-	if mlen < e.logger.MsgMinLen {
-		for i := 0; i < e.logger.MsgMinLen-mlen; i++ {
-			msg += " "
+
+	if !e.logger.Json {
+		mlen := len(msg)
+		if mlen < e.logger.MsgMinLen {
+			for i := 0; i < e.logger.MsgMinLen-mlen; i++ {
+				msg += " "
+			}
 		}
 	}
 	data := map[string]any{
