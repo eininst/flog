@@ -160,7 +160,7 @@ func (e *Entry) entrySprintf(levelStr string, format string, fields any, a ...an
 	path := e.getPath()
 	msg := fmt.Sprintf(format, a...)
 
-	if !e.logger.Json {
+	if !e.logger.Json && e.logger.MsgMinLen > 0 {
 		mlen := len(msg)
 		if mlen < e.logger.MsgMinLen {
 			for i := 0; i < e.logger.MsgMinLen-mlen; i++ {
