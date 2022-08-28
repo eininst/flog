@@ -12,7 +12,7 @@ go get -u github.com/eininst/flog
 package main
 
 import (
-	flog "github.com/eininst/fastgo-log"
+	"github.com/eininst/flog"
 )
 
 func main() {
@@ -22,9 +22,11 @@ func main() {
 	flog.Warn("You should probably take a look at this.")
 	flog.Error("Something failed but I'm not quitting.")
 
+	flog.Info("1", "2", "3")
 	flog.Info(flog.Sprintf("My name is ${name}", flog.H{
 		"name": "jack",
 	}))
+	flog.Infof("My name is %s", "tomi")
 
 	//Calls os.Exit(1) after logging
 	flog.Fatal("Bye.")
@@ -35,13 +37,15 @@ func main() {
 
 
 ```
-2022/08/28 02:13:18 [TRACE] test.go:15 Something very low level.
-2022/08/28 02:13:18 [DEBUG] test.go:16 Useful debugging information.
-2022/08/28 02:13:18 [INFO] test.go:17 Something noteworthy happened!
-2022/08/28 02:13:18 [WARN] test.go:18 You should probably take a look at this.
-2022/08/28 02:13:18 [ERROR] test.go:19 Something failed but I'm not quitting.
-2022/08/28 02:13:18 [INFO] test.go:21 My name is jack
-2022/08/28 02:13:18 [FATAL] test.go:26 Bye.
+2022/08/28 17:44:13 [TRACE] test.go:8 Something very low level. 
+2022/08/28 17:44:13 [DEBUG] test.go:9 Useful debugging information.     
+2022/08/28 17:44:13 [INFO] test.go:10 Something noteworthy happened!    
+2022/08/28 17:44:13 [WARN] test.go:11 You should probably take a look at this.  
+2022/08/28 17:44:13 [ERROR] test.go:12 Something failed but I'm not quitting.   
+2022/08/28 17:44:13 [INFO] test.go:14 1 2 3     
+2022/08/28 17:44:13 [INFO] test.go:15 My name is jack   
+2022/08/28 17:44:13 [INFO] test.go:18 My name is tomi   
+2022/08/28 17:44:13 [FATAL] test.go:21 Bye. 
 ```
 
 > You can customize it all you want:

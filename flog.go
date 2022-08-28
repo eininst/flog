@@ -22,7 +22,7 @@ func init() {
 	gormSourceDir = regexp.MustCompile(`utils.utils\.go`).ReplaceAllString(file, "")
 }
 
-func FileWithLineNum() string {
+func fileWithLineNum() string {
 	// the second caller usually from gorm internal, so set i start from 2
 	for i := 2; i < 15; i++ {
 		_, file, line, ok := runtime.Caller(i)
@@ -419,7 +419,7 @@ func (l *logger) t() string {
 }
 
 func (l *logger) getPath() string {
-	path := FileWithLineNum()
+	path := fileWithLineNum()
 	if !l.FullPath {
 		arr := strings.Split(path, "/")
 		path = arr[len(arr)-1]
