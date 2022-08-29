@@ -34,12 +34,14 @@ type Fields map[string]interface{}
 
 type Entry struct {
 	logger *logger
+	format string
 	data   Fields
 }
 
 func NewEntry(logger *logger) *Entry {
 	return &Entry{
 		logger: logger,
+		format: logger.Format + "  ${fields}",
 		data:   make(Fields),
 	}
 }
@@ -175,17 +177,11 @@ func (e *Entry) entrySprintf(levelStr string, format string, fields any, a ...an
 		"path":  path,
 		"msg":   msg,
 	}
-	if fields != nil && e.logger.writeFields {
-		if e.logger.Json {
-			for k, v := range fields.(Fields) {
-				data[k] = v
-			}
-			delete(data, "fields")
-		} else {
-			data["fields"] = fields
-		}
-	}
+
 	if e.logger.Json {
+		for k, v := range fields.(Fields) {
+			data[k] = v
+		}
 		s, ok := levelStrMap[data["level"].(string)]
 		if ok {
 			data["level"] = s
@@ -194,7 +190,9 @@ func (e *Entry) entrySprintf(levelStr string, format string, fields any, a ...an
 
 		return string(jsonStr)
 	} else {
-		return Sprintf(e.logger.Format, data)
+		data["fields"] = fields
+
+		return Sprintf(e.format, data)
 	}
 }
 

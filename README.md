@@ -86,12 +86,12 @@ func main() {
 ```
 
 ```textmate
-2022/08/28 19:21:36 [DEBUG] main.go:16 Start with fields！      
-2022/08/28 19:21:36 [INFO] main.go:21 A group of walrus emerges from the ocean          animal=walrus size=10
-2022/08/28 19:21:36 [WARN] main.go:26 The group's number increased tremendously!        number=122 omg=true
-2022/08/28 19:21:36 [ERROR] main.go:32 The ice breaks!                                  number=100 name=wzq omg=true
-2022/08/28 19:21:36 [INFO] main.go:39 I'll be logged with common and other field        common=this is a common field other=I also should be logged always
-2022/08/28 19:21:36 [INFO] main.go:40 Me too                                            common=this is a common field other=I also should be logged always
+2022/08/29 20:55:41 [DEBUG] main.go:12 Start with fields！
+2022/08/29 20:55:41 [INFO] main.go:17 A group of walrus emerges from the ocean  animal=walrus size=10
+2022/08/29 20:55:41 [WARN] main.go:22 The group's number increased tremendously!  number=122 omg=true
+2022/08/29 20:55:41 [ERROR] main.go:28 The ice breaks!  name=wzq number=100 omg=true
+2022/08/29 20:55:41 [INFO] main.go:35 I'll be logged with common and other field  common=this is a common field other=I also should be logged always
+2022/08/29 20:55:41 [INFO] main.go:36 Me too  common=this is a common field other=I also should be logged always
 ```
 
 > You can customize it all you want:
@@ -101,7 +101,7 @@ func init() {
 	
 	flog.SetTimeFormat("2006.01.02 15:04:05.000")
 	
-	flog.SetFormat("${level} ${time} ${path} ${msg}\t${fields}")
+	flog.SetFormat("${level} ${time} ${path} ${msg}")
 	
 	flog.SetFullPath(true)
 }
@@ -131,5 +131,7 @@ func init() {
 {"common":"this is a common field","level":"INFO","msg":"I'll be logged with common and other field","other":"I also should be logged always","path":"main.go:35","time":"2022/08/28 19:26:10"}
 {"common":"this is a common field","level":"INFO","msg":"Me too","other":"I also should be logged always","path":"main.go:36","time":"2022/08/28 19:26:10"}
 ```
+
+> See [examples](/examples)
 ## License
 *MIT*

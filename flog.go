@@ -110,11 +110,10 @@ type logger struct {
 	Config
 	traceStr, debugStr, infoStr, warnStr,
 	errStr, fatalStr, panicStr string
-	writeFields bool
 }
 
 var (
-	DefaultFormat     = "${time} ${level} ${path} ${msg}\t${fields}"
+	DefaultFormat     = "${time} ${level} ${path} ${msg}"
 	DefaultTimeFormat = "2006/01/02 15:04:05"
 
 	defaultConfig = Config{
@@ -123,7 +122,7 @@ var (
 		LogLevel:   TraceLevel,
 		TimeFormat: DefaultTimeFormat,
 		FullPath:   false,
-		MsgMinLen:  48,
+		MsgMinLen:  0,
 	}
 	std = New(defaultConfig)
 )
@@ -242,19 +241,15 @@ func New(config Config) Interface {
 	if config.LogLevel == 0 {
 		config.LogLevel = defaultConfig.LogLevel
 	}
-	if config.MsgMinLen == 0 {
-		config.MsgMinLen = defaultConfig.MsgMinLen
-	}
 	return &logger{
-		Config:      config,
-		traceStr:    traceStr,
-		debugStr:    debugStr,
-		infoStr:     infoStr,
-		warnStr:     warnStr,
-		errStr:      errStr,
-		fatalStr:    fatalStr,
-		panicStr:    panicStr,
-		writeFields: strings.Contains(config.Format, "${fields}"),
+		Config:   config,
+		traceStr: traceStr,
+		debugStr: debugStr,
+		infoStr:  infoStr,
+		warnStr:  warnStr,
+		errStr:   errStr,
+		fatalStr: fatalStr,
+		panicStr: panicStr,
 	}
 }
 
