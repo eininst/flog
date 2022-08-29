@@ -18,22 +18,22 @@ import (
 )
 
 func main() {
-	flog.Trace("Something very low level.")
-	flog.Debug("Useful debugging information.")
-	flog.Info("Something noteworthy happened!")
-	flog.Warn("You should probably take a look at this.")
-	flog.Error("Something failed but I'm not quitting.")
+    flog.Trace("Something very low level.")
+    flog.Debug("Useful debugging information.")
+    flog.Info("Something noteworthy happened!")
+    flog.Warn("You should probably take a look at this.")
+    flog.Error("Something failed but I'm not quitting.")
 
-	flog.Info("1", "2", "3")
-	flog.Info(flog.Sprintf("My name is ${name}", flog.H{
-		"name": "jack",
-	}))
-	flog.Infof("My name is %s", "tomi")
+    flog.Info("1", "2", "3")
+    flog.Info(flog.Sprintf("My name is ${name}", flog.H{
+        "name": "jack",
+    }))
+    flog.Infof("My name is %s", "tomi")
 
-	//Calls os.Exit(1) after logging
-	flog.Fatal("Bye.")
-	//Calls panic() after logging
-	flog.Panic("I'm bailing.")
+    //Calls os.Exit(1) after logging
+    flog.Fatal("Bye.")
+    //Calls panic() after logging
+    flog.Panic("I'm bailing.")
 }
 ```
 
@@ -59,31 +59,31 @@ import (
 )
 
 func main() {
-	flog.Debug("Start with fields！")
+    flog.Debug("Start with fields！")
 
-	flog.With(flog.Fields{
-		"animal": "walrus",
-		"size":   10,
-	}).Info("A group of walrus emerges from the ocean")
+    flog.With(flog.Fields{
+        "animal": "walrus",
+        "size":   10,
+    }).Info("A group of walrus emerges from the ocean")
 
-	flog.With(flog.Fields{
-		"omg":    true,
-		"number": 122,
-	}).Warn("The group's number increased tremendously!")
+    flog.With(flog.Fields{
+        "omg":    true,
+        "number": 122,
+    }).Warn("The group's number increased tremendously!")
 
-	flog.With(flog.Fields{
-		"name":   "wzq",
-		"omg":    true,
-		"number": 100,
-	}).Error("The ice breaks!")
+    flog.With(flog.Fields{
+        "name":   "wzq",
+        "omg":    true,
+        "number": 100,
+    }).Error("The ice breaks!")
 
-	contextLogger := flog.With(flog.Fields{
-		"common": "this is a common field",
-		"other":  "I also should be logged always",
-	})
+    contextLogger := flog.With(flog.Fields{
+        "common": "this is a common field",
+        "other":  "I also should be logged always",
+    })
 
-	contextLogger.Info("I'll be logged with common and other field")
-	contextLogger.Info("Me too")
+    contextLogger.Info("I'll be logged with common and other field")
+    contextLogger.Info("Me too")
 }
 ```
 
