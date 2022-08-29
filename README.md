@@ -3,9 +3,11 @@
 [![Build Status](https://travis-ci.org/ivpusic/grpool.svg?branch=master)](https://github.com/infinitasx/easi-go-aws)
 
 ## Installation
+
 ```text
 go get -u github.com/eininst/flog
 ```
+
 ## ⚡ Quickstart
 
 ```go
@@ -35,7 +37,6 @@ func main() {
 }
 ```
 
-
 ```
 2022/08/28 17:44:13 [TRACE] test.go:8 Something very low level. 
 2022/08/28 17:44:13 [DEBUG] test.go:9 Useful debugging information.     
@@ -49,6 +50,7 @@ func main() {
 ```
 
 > With Fields
+
 ```go
 package main
 
@@ -95,15 +97,18 @@ func main() {
 ```
 
 > You can customize it all you want:
+
 ```go
 func init() {
-	flog.SetLevel(flog.InfoLevel)
-	
-	flog.SetTimeFormat("2006.01.02 15:04:05.000")
-	
-	flog.SetFormat("${level} ${time} ${path} ${msg}")
-	
-	flog.SetFullPath(true)
+    flog.SetLevel(flog.InfoLevel)
+    
+    flog.SetTimeFormat("2006.01.02 15:04:05.000")
+    
+    flog.SetFormat("${level} ${time} ${path} ${msg}")
+    
+    flog.SetFullPath(true)
+    
+    flog.SetMsgMinLen(50)
 }
 ```
 
@@ -115,8 +120,8 @@ func init() {
 [INFO] 2022.08.28 19:22:02.109 /Users/wangziqing/go/flog/test/main.go:40 Me too                                         other=I also should be logged always common=this is a common field
 ```
 
-
 > Dump Json
+
 ```go
 func init() {
     flog.DumpJson()
@@ -133,5 +138,7 @@ func init() {
 ```
 
 > See [examples](/examples)
+
 ## License
+
 *MIT*

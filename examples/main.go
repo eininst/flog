@@ -13,7 +13,7 @@ func init() {
 
 	flog.SetFullPath(true)
 
-	flog.SetMsgMinLen(42)
+	flog.SetMsgMinLen(50)
 }
 
 func main() {
