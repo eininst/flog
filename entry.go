@@ -39,9 +39,13 @@ type Entry struct {
 }
 
 func NewEntry(logger *logger) *Entry {
+	f := logger.Format + "  ${fields}"
+	if strings.Contains(logger.Format, "${fields}") {
+		f = logger.Format
+	}
 	return &Entry{
 		logger: logger,
-		format: logger.Format + "  ${fields}",
+		format: f,
 		data:   make(Fields),
 	}
 }
