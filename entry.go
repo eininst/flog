@@ -197,7 +197,7 @@ func (e *Entry) entrySprintf(levelStr string, format string, fields any, a ...an
 
 		return string(jsonStr)
 	} else {
-		if len(fields.(Fields)) > 0 {
+		if len(fields.(string)) > 0 {
 			data["fields"] = fields
 			return Sprintf(e.format, data)
 		}
