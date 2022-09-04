@@ -413,7 +413,7 @@ func (l *logger) sprintf(levelStr string, format string, a ...any) string {
 		"time":  l.t(),
 		"path":  path,
 		"msg":   fmt.Sprintf(format, a...),
-		"pid":   os.Getpid(),
+		"pid":   fmt.Sprintf("%v", os.Getpid()),
 	}
 
 	if l.Json {
