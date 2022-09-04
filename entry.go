@@ -36,15 +36,17 @@ type Entry struct {
 	logger *logger
 	format string
 	data   Fields
+	ok     bool
 }
 
-func NewEntry(logger *logger) *Entry {
+func NewEntry(logger *logger, ok bool) *Entry {
 	f := logger.Format + "  ${fields}"
 	if strings.Contains(logger.Format, "${fields}") {
 		f = logger.Format
 	}
 	return &Entry{
 		logger: logger,
+		ok:     ok,
 		format: f,
 		data:   make(Fields),
 	}
@@ -58,72 +60,72 @@ func (e *Entry) With(fields Fields) *Entry {
 }
 
 func (e *Entry) Trace(a ...any) {
-	if e.logger.LogLevel >= TraceLevel {
+	if e.logger.LogLevel >= TraceLevel && e.ok {
 		f := e.logger.formatData(a...)
 		fmt.Println(e.entrySprintf(e.logger.traceStr, f, e.fieldsFormat(White), a...))
 	}
 }
 
 func (e *Entry) Tracef(format string, a ...any) {
-	if e.logger.LogLevel >= TraceLevel {
+	if e.logger.LogLevel >= TraceLevel && e.ok {
 		fmt.Println(e.entrySprintf(e.logger.traceStr, format, e.fieldsFormat(White), a...))
 	}
 }
 
 func (e *Entry) Debug(a ...any) {
-	if e.logger.LogLevel >= DebugLevel {
+	if e.logger.LogLevel >= DebugLevel && e.ok {
 		f := e.logger.formatData(a...)
 		fmt.Println(e.entrySprintf(e.logger.debugStr, f, e.fieldsFormat(White), a...))
 	}
 }
 
 func (e *Entry) Debugf(format string, a ...any) {
-	if e.logger.LogLevel >= DebugLevel {
+	if e.logger.LogLevel >= DebugLevel && e.ok {
 		fmt.Println(e.entrySprintf(e.logger.debugStr, format, e.fieldsFormat(White), a...))
 	}
 }
 
 func (e *Entry) Info(a ...any) {
-	if e.logger.LogLevel >= InfoLevel {
+	if e.logger.LogLevel >= InfoLevel && e.ok {
 		f := e.logger.formatData(a...)
 		fmt.Println(e.entrySprintf(e.logger.infoStr, f, e.fieldsFormat(Cyan), a...))
 	}
 }
 
 func (e *Entry) Infof(format string, a ...any) {
-	if e.logger.LogLevel >= InfoLevel {
+	if e.logger.LogLevel >= InfoLevel && e.ok {
 		fmt.Println(e.entrySprintf(e.logger.infoStr, format, e.fieldsFormat(Cyan), a...))
 	}
 }
 
 func (e *Entry) Warn(a ...any) {
-	if e.logger.LogLevel >= WarnLevel {
+	if e.logger.LogLevel >= WarnLevel && e.ok {
 		f := e.logger.formatData(a...)
 		fmt.Println(e.entrySprintf(e.logger.warnStr, f, e.fieldsFormat(Yellow), a...))
 	}
 }
 
 func (e *Entry) Warnf(format string, a ...any) {
-	if e.logger.LogLevel >= WarnLevel {
+	if e.logger.LogLevel >= WarnLevel && e.ok {
 		fmt.Println(e.entrySprintf(e.logger.warnStr, format, e.fieldsFormat(Yellow), a...))
 	}
 }
 
 func (e *Entry) Error(a ...any) {
-	if e.logger.LogLevel >= ErrorLevel {
+	if e.logger.LogLevel >= ErrorLevel && e.ok {
 		f := e.logger.formatData(a...)
 		fmt.Println(e.entrySprintf(e.logger.errStr, f, e.fieldsFormat(Red), a...))
 	}
 }
 
 func (e *Entry) Errorf(format string, a ...any) {
-	if e.logger.LogLevel >= ErrorLevel {
+	if e.logger.LogLevel >= ErrorLevel && e.ok {
 		fmt.Println(e.entrySprintf(e.logger.errStr, format, e.fieldsFormat(Red), a...))
 	}
 }
 
 func (e *Entry) Fatal(a ...any) {
-	if e.logger.LogLevel >= ErrorLevel {
+	if e.logger.LogLevel >= ErrorLevel && e.ok {
 		f := e.logger.formatData(a...)
 		fmt.Println(e.entrySprintf(e.logger.fatalStr, f, e.fieldsFormat(Red), a...))
 		os.Exit(1)
@@ -131,14 +133,14 @@ func (e *Entry) Fatal(a ...any) {
 }
 
 func (e *Entry) Fatalf(format string, a ...any) {
-	if e.logger.LogLevel >= ErrorLevel {
+	if e.logger.LogLevel >= ErrorLevel && e.ok {
 		fmt.Println(e.entrySprintf(e.logger.fatalStr, format, e.fieldsFormat(Red), a...))
 		os.Exit(1)
 	}
 }
 
 func (e *Entry) Panic(a ...any) {
-	if e.logger.LogLevel >= ErrorLevel {
+	if e.logger.LogLevel >= ErrorLevel && e.ok {
 		f := e.logger.formatData(a...)
 		r := e.entrySprintf(e.logger.panicStr, f, e.fieldsFormat(Red), a...)
 		fmt.Println(r)
@@ -147,7 +149,7 @@ func (e *Entry) Panic(a ...any) {
 }
 
 func (e *Entry) Panicf(format string, a ...any) {
-	if e.logger.LogLevel >= ErrorLevel {
+	if e.logger.LogLevel >= ErrorLevel && e.ok {
 		r := e.entrySprintf(e.logger.panicStr, format, e.fieldsFormat(Red), a...)
 		fmt.Println(r)
 		panic(errors.New(r))
@@ -195,9 +197,11 @@ func (e *Entry) entrySprintf(levelStr string, format string, fields any, a ...an
 
 		return string(jsonStr)
 	} else {
-		data["fields"] = fields
-
-		return Sprintf(e.format, data)
+		if len(fields.(Fields)) > 0 {
+			data["fields"] = fields
+			return Sprintf(e.format, data)
+		}
+		return Sprintf(e.logger.Format, data)
 	}
 }
 

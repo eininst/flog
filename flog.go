@@ -85,6 +85,7 @@ type Interface interface {
 	SetTimeFormat(string)
 	SetFullPath(bool)
 	SetMsgMinLen(mlen int)
+	Is(bool) *Entry
 
 	With(fields Fields) *Entry
 	Trace(a ...any)
@@ -152,6 +153,11 @@ func SetFullPath(fullPath bool) {
 func SetMsgMinLen(mlen int) {
 	std.SetMsgMinLen(mlen)
 }
+
+func Is(ok bool) *Entry {
+	return std.Is(ok)
+}
+
 func With(fields Fields) *Entry {
 	return std.With(fields)
 }
@@ -263,6 +269,9 @@ func (l *logger) DumpJson() {
 	l.Json = true
 }
 
+func (l *logger) Is(ok bool) *Entry {
+	return NewEntry(l, ok)
+}
 func (l *logger) SetLevel(level LogLevel) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -296,7 +305,7 @@ func (l *logger) SetConfig(cfg Config) {
 }
 
 func (l *logger) With(fields Fields) *Entry {
-	return NewEntry(l).With(fields)
+	return NewEntry(l, true).With(fields)
 }
 
 // Trace print messages
