@@ -130,12 +130,12 @@ func init() {
 ```
 
 ```textmate
-{"level":"DEBUG","msg":"Start with fields！","path":"main.go:12","time":"2022/08/28 19:26:10"}
-{"animal":"walrus","level":"INFO","msg":"A group of walrus emerges from the ocean","path":"main.go:17","size":10,"time":"2022/08/28 19:26:10"}
-{"level":"WARN","msg":"The group's number increased tremendously!","number":122,"omg":true,"path":"main.go:22","time":"2022/08/28 19:26:10"}
-{"level":"ERROR","msg":"The ice breaks!","name":"wzq","number":100,"omg":true,"path":"main.go:28","time":"2022/08/28 19:26:10"}
-{"common":"this is a common field","level":"INFO","msg":"I'll be logged with common and other field","other":"I also should be logged always","path":"main.go:35","time":"2022/08/28 19:26:10"}
-{"common":"this is a common field","level":"INFO","msg":"Me too","other":"I also should be logged always","path":"main.go:36","time":"2022/08/28 19:26:10"}
+{"level":"DEBUG","msg":"Start with fields！","path":"/Users/wangziqing/go/flog/examples/main.go:24","pid":"79546","time":"2022.09.04 10:04:59.105"}
+{"animal":"walrus","level":"INFO","msg":"A group of walrus emerges from the ocean","path":"/Users/wangziqing/go/flog/examples/main.go:29","pid":"79546","size":10,"time":"2022.09.04 10:04:59.105"}
+{"level":"WARN","msg":"The group's number increased tremendously!","number":122,"omg":true,"path":"/Users/wangziqing/go/flog/examples/main.go:34","pid":"79546","time":"2022.09.04 10:04:59.105"}
+{"level":"ERROR","msg":"The ice breaks!","name":"wzq","number":100,"omg":true,"path":"/Users/wangziqing/go/flog/examples/main.go:40","pid":"79546","time":"2022.09.04 10:04:59.105"}
+{"common":"this is a common field","level":"INFO","msg":"I'll be logged with common and other field","other":"I also should be logged always","path":"/Users/wangziqing/go/flog/examples/main.go:47","pid":"79546","time":"2022.09.04 10:04:59.105"}
+{"common":"this is a common field","level":"INFO","msg":"Me too","other":"I also should be logged always","path":"/Users/wangziqing/go/flog/examples/main.go:48","pid":"79546","time":"2022.09.04 10:04:59.105"}
 ```
 
 > See [examples](/examples)
