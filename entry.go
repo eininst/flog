@@ -180,6 +180,7 @@ func (e *Entry) entrySprintf(levelStr string, format string, fields any, a ...an
 		"time":  e.logger.t(),
 		"path":  path,
 		"msg":   msg,
+		"pid":   os.Getpid(),
 	}
 
 	if e.logger.Json {
