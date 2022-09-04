@@ -103,9 +103,10 @@ func init() {
     flog.SetLevel(flog.InfoLevel)
     
     flog.SetTimeFormat("2006.01.02 15:04:05.000")
-    
-    flog.SetFormat("${level} ${time} ${path} ${msg}")
-    
+
+    logf := "%s[${pid}]%s ${time} ${level} ${path} ${msg}"
+    flog.SetFormat(fmt.Sprintf(logf, flog.Cyan, flog.Reset))
+
     flog.SetFullPath(true)
     
     flog.SetMsgMinLen(50)
@@ -113,11 +114,11 @@ func init() {
 ```
 
 ```text
-[INFO] 2022.08.28 19:22:02.108 /Users/wangziqing/go/flog/test/main.go:21 A group of walrus emerges from the ocean       size=10 animal=walrus
-[WARN] 2022.08.28 19:22:02.109 /Users/wangziqing/go/flog/test/main.go:26 The group's number increased tremendously!     omg=true number=122
-[ERROR] 2022.08.28 19:22:02.109 /Users/wangziqing/go/flog/test/main.go:32 The ice breaks!                               name=wzq omg=true number=100
-[INFO] 2022.08.28 19:22:02.109 /Users/wangziqing/go/flog/test/main.go:39 I'll be logged with common and other field     other=I also should be logged always common=this is a common field
-[INFO] 2022.08.28 19:22:02.109 /Users/wangziqing/go/flog/test/main.go:40 Me too                                         other=I also should be logged always common=this is a common field
+[79338] 2022.09.04 10:02:55.140 [INFO] /Users/wangziqing/go/flog/examples/main.go:27 A group of walrus emerges from the ocean            animal=walrus size=10
+[79338] 2022.09.04 10:02:55.140 [WARN] /Users/wangziqing/go/flog/examples/main.go:32 The group's number increased tremendously!          number=122 omg=true
+[79338] 2022.09.04 10:02:55.140 [ERROR] /Users/wangziqing/go/flog/examples/main.go:38 The ice breaks!                                     name=wzq number=100 omg=true
+[79338] 2022.09.04 10:02:55.140 [INFO] /Users/wangziqing/go/flog/examples/main.go:45 I'll be logged with common and other field          common=this is a common field other=I also should be logged always
+[79338] 2022.09.04 10:02:55.140 [INFO] /Users/wangziqing/go/flog/examples/main.go:46 Me too                                              common=this is a common field other=I also should be logged always
 ```
 
 > Dump Json

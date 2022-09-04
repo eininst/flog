@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/eininst/flog"
 )
 
@@ -9,7 +10,8 @@ func init() {
 
 	flog.SetTimeFormat("2006.01.02 15:04:05.000")
 
-	flog.SetFormat("${level} ${time} ${path} ${msg}")
+	logf := "%s[${pid}]%s ${time} ${level} ${path} ${msg}"
+	flog.SetFormat(fmt.Sprintf(logf, flog.Cyan, flog.Reset))
 
 	flog.SetFullPath(true)
 
