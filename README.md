@@ -2,6 +2,17 @@
 
 [![Build Status](https://travis-ci.org/ivpusic/grpool.svg?branch=master)](https://github.com/infinitasx/easi-go-aws)
 
+`flog` 是一个轻量级的 Go 语言日志库，支持多种日志级别输出、日志字段扩展以及自定义格式（JSON / 纯文本）等功能。它旨在提供一个易于使用、可定制且性能良好的日志解决方案。
+
+
+## 功能特性
+
+- **多级别日志输出**：支持 Trace、Debug、Info、Warn、Error、Fatal、Panic 等常见日志级别。
+- **字段扩展**：可以通过 `With(Fields)` 方法向日志添加额外字段。
+- **格式灵活**：支持 JSON 和自定义的纯文本格式；可根据需求自定义输出格式。
+- **可配置**：通过配置选项，自定义日志前缀、时间、是否显示全路径、最小消息长度等。
+- **兼容性**：基于 Go 标准库实现，无第三方依赖，适合与各种项目进行集成。
+- 
 ## ⚙ Installation
 
 ```text
