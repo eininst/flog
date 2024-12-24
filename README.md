@@ -1,4 +1,6 @@
 # Flog
+[![Go Reference](https://pkg.go.dev/badge/github.com/eininst/flog.svg)](https://pkg.go.dev/github.com/eininst/flog)
+[![License](https://img.shields.io/github/license/eininst/flog.svg)](LICENSE)
 
 `flog` 是一个轻量级的 Go 语言日志库，支持多种日志级别输出、日志字段扩展以及自定义格式（JSON / 纯文本）等功能。它旨在提供一个易于使用、可定制且性能良好的日志解决方案。
 
@@ -10,7 +12,7 @@
 - **格式灵活**：支持 JSON 和自定义的纯文本格式；可根据需求自定义输出格式。
 - **可配置**：通过配置选项，自定义日志前缀、时间、是否显示全路径、最小消息长度等。
 - **兼容性**：基于 Go 标准库实现，无第三方依赖，适合与各种项目进行集成。
-- 
+
 ## ⚙ Installation
 
 ```text
