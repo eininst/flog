@@ -1,7 +1,5 @@
 # Flog
 
-[![Build Status](https://travis-ci.org/ivpusic/grpool.svg?branch=master)](https://github.com/infinitasx/easi-go-aws)
-
 `flog` 是一个轻量级的 Go 语言日志库，支持多种日志级别输出、日志字段扩展以及自定义格式（JSON / 纯文本）等功能。它旨在提供一个易于使用、可定制且性能良好的日志解决方案。
 
 
